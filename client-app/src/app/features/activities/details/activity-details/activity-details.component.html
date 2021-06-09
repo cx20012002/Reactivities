@@ -1,0 +1,13 @@
+<div class="card shadow-sm">
+  <img src="assets/Images/categoryImages/{{activity.category}}.jpg" class="img-fluid">
+
+  <div class="card-body">
+    <h4>{{activity.title}}</h4>
+    <span class="small text-muted">{{activity.date}}</span>
+    <p class="card-text">{{activity.description}}</p>
+      <div class="btn-group d-flex">
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="openForm(activity.id)">Edit</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelSelectActivity()">Cancel</button>
+      </div>
+  </div>
+</div>

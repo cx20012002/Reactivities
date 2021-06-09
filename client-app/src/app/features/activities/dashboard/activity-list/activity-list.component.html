@@ -1,0 +1,17 @@
+<div class="px-4 py-3 bg-white shadow-sm">
+  <div class="mb-2" *ngFor="let activity of activities">
+    <h4 class="mb-1">{{activity.title}}</h4>
+    <div class="mb-1 text-muted">{{activity.date}}</div>
+    <p class="card-text mb-auto">{{activity.venue}}</p>
+    <p class="card-text mb-auto">{{activity.city}}</p>
+    <div class="group mt-2 d-flex justify-content-between">
+      <span class="border rounded px-2 py-1">{{activity.category}}</span>
+      <div>
+        <button class="btn btn-sm btn-danger px-4 mr-2" (click)="deleteActivity(activity.id)">Delete</button>
+        <button class="btn btn-sm btn-primary px-4" (click)="selectActivity(activity.id)">View</button>
+      </div>
+    </div>
+    <hr class="mt-4">
+  </div>
+</div>
+
