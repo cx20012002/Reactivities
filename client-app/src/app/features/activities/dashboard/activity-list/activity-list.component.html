@@ -7,8 +7,10 @@
     <div class="group mt-2 d-flex justify-content-between">
       <span class="border rounded px-2 py-1">{{activity.category}}</span>
       <div>
-        <button class="btn btn-sm btn-danger px-4 mr-2" (click)="deleteActivity(activity.id)">Delete</button>
-        <button class="btn btn-sm btn-primary px-4" (click)="selectActivity(activity.id)">View</button>
+        <button [disabled]="submitting" class="btn btn-sm btn-danger px-4 mr-2" name="{{activity.id}}" (click)="handleActivityDelete($event, activity.id)">
+          <span *ngIf="submitting && target === activity.id" class="spinner-border spinner-border-sm"></span>
+          Delete</button>
+        <button [disabled]="submitting" class="btn btn-sm btn-primary px-4" (click)="selectActivity(activity.id)">View</button>
       </div>
     </div>
     <hr class="mt-4">

@@ -11,7 +11,7 @@
         <input type="text" class="form-control" placeholder="Category" name="category"  [ngModel]="activity.category">
       </div>
       <div class="form-group">
-        <input type="text" class="form-control"  name="date"   placeholder="dd/mm/yyyy" bsDatepicker [ngModel]="activity.date">
+        <input type="date" class="form-control"  name="date"   placeholder="dd/mm/yyyy" bsDatepicker [ngModel]="activity.date">
       </div>
       <div class="form-group">
         <input type="text" class="form-control" name="city" placeholder="City" [ngModel]="activity.city">
@@ -20,9 +20,10 @@
         <input type="text" class="form-control" name="venue" placeholder="Venue" [ngModel]="activity.venue">
       </div>
       <div class="form-group">
-        <button class="btn btn-success float-right" type="submit">
+        <button [disabled]="submitting" class="btn btn-success float-right" type="submit">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm"></span>
           Submit</button>
-        <button class="btn btn-secondary float-right mr-2" type="button" (click)="closeForm()">Cancel</button>
+        <button [disabled]="submitting" class="btn btn-secondary float-right mr-2" type="button" (click)="closeForm()">Cancel</button>
       </div>
     </form>
   </div>

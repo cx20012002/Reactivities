@@ -16,6 +16,7 @@ export class ActivityDashboardComponent implements OnInit {
   @Input() closeForm: () => void;
   @Input() createOrEdit: (activity: Activity) => void;
   @Input() deleteActivity: (id: string) => void;
+  @Input() submitting: boolean;
 
   constructor() {
   }

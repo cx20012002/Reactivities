@@ -1,3 +1,5 @@
+<ngx-spinner [showSpinner]="loading" [disableAnimation]="true"></ngx-spinner>
+
 <app-navbar [openForm]="handleFormOpen"></app-navbar>
 
 
@@ -12,6 +14,7 @@
     [closeForm]="handleFormClose"
     [createOrEdit]="handleCreateOrEditActivity"
     [deleteActivity]="handleDeleteActivity"
+    [submitting]="submitting"
   ></app-activity-dashboard>
 </div>
 

@@ -12,6 +12,7 @@ export class ActivityFormComponent implements OnInit {
   @Input() closeForm: () => void;
   @ViewChild('activityForm') activityForm: NgForm;
   @Input() createOrEdit: (activity: Activity) => void;
+  @Input() submitting: boolean;
 
   constructor() {
 

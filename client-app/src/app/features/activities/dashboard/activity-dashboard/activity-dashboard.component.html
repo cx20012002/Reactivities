@@ -1,10 +1,11 @@
 <div class="row">
   <div class="col-8">
-      <app-activity-list
-        [activities]="activities"
-        [selectActivity]="selectActivity"
-        [deleteActivity]="deleteActivity"
-      ></app-activity-list>
+    <app-activity-list
+      [activities]="activities"
+      [selectActivity]="selectActivity"
+      [deleteActivity]="deleteActivity"
+      [submitting]="submitting"
+    ></app-activity-list>
   </div>
 
   <div class="col-4">
@@ -19,6 +20,7 @@
       *ngIf="editMode"
       [closeForm]="closeForm"
       [createOrEdit]="createOrEdit"
+      [submitting]="submitting"
     ></app-activity-form>
   </div>
 </div>
