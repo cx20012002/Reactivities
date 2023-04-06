@@ -1,69 +1,27 @@
-import React, {useEffect, useState} from 'react';
-import axios from "axios";
-import {Activity} from "../models/activity";
+import React, {useEffect} from 'react';
 import NavBar from "./NavBar";
 import 'semantic-ui-css/semantic.min.css'
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import {Container} from "semantic-ui-react";
-import {v4 as uuid} from 'uuid';
+import LoadingComponent from "./LoadingComponent";
+import {useAppDispatch, useAppSelector} from "../store/store";
+import {fetchActivitiesAsync} from "../../features/activities/activitySlice";
 
 function App() {
-    const [activities, setActivities] = useState<Activity[]>([]);
-    const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
-    const [editMode, setEditMode] = useState(false);
-    
-    useEffect(() => {
-        axios.get<Activity[]>('http://localhost:5148/api/activities').then(response => {
-            setActivities(response.data);
-        }).catch(error => {
-            console.log(error);
-        })
-    }, [])
+    const dispatch = useAppDispatch();
+    const {initialLoad} = useAppSelector(state => state.activities);
 
-    function handleSelectActivity(id: string) {
-        setSelectedActivity(activities.find(x => x.id === id));
-    }
-    
-    function handleCancelSelectActivity(){
-        setSelectedActivity(undefined);
-    }
-    
-    function handleFormOpen(id?: string){
-        id ? handleSelectActivity(id) : handleCancelSelectActivity();
-        setEditMode(true);
-    }
-    
-    function handleFormClose(){
-        setEditMode(false);
-    }
-    
-    function handleCreateOrEditActivity(activity: Activity){
-        activity.id
-            ? setActivities([...activities.filter(x => x.id !== activity.id), activity])
-            : setActivities([...activities, {...activity, id: uuid()}]);
-        setEditMode(false);
-        setSelectedActivity(activity);
-    }
-    
-    function handleDeleteActivity(id: string){
-        setActivities([...activities.filter(x => x.id !== id)]);
-    }
-    
+    useEffect(() => {
+        dispatch(fetchActivitiesAsync());
+    }, [dispatch])
+
+    if (initialLoad) return <LoadingComponent content='Loading Activities...'/>
+
     return (
         <>
-            <NavBar openForm={handleFormOpen}/>
+            <NavBar/>
             <Container style={{marginTop: '7em'}}>
-                <ActivityDashboard 
-                    activities={activities}
-                    selectedActivity={selectedActivity}
-                    selectActivity={handleSelectActivity}
-                    cancelSelectedActivity={handleCancelSelectActivity}
-                    editMode={editMode}
-                    openForm={handleFormOpen}
-                    closeForm={handleFormClose}
-                    createOrEdit={handleCreateOrEditActivity}
-                    deleteActivity={handleDeleteActivity}
-                />
+                <ActivityDashboard />
             </Container>
         </>
     );

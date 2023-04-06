@@ -1,15 +1,16 @@
 import React from 'react';
 import {Button, Card, Image} from "semantic-ui-react";
-import {Activity} from "../../../app/models/activity";
+import {useAppDispatch, useAppSelector} from "../../../app/store/store";
+import {cancelSelectedActivity, openForm} from "../activitySlice";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
-interface Props {
-    selectedActivity: Activity
-    cancelSelectedActivity: () => void;
-    openForm: (id: string) => void;
+function ActivityDetails() {
     
-}
-
-function ActivityDetails({selectedActivity: activity, cancelSelectedActivity, openForm}: Props) {
+    const {selectedActivity: activity} = useAppSelector(state => state.activities);
+    const dispatch = useAppDispatch();
+    
+    if (!activity) return <LoadingComponent/>;
+    
     return (
         <Card fluid>
             <Image src={`/assets/categoryImages/${activity.category}.jpg`} wrapped ui={false}/>
@@ -24,8 +25,8 @@ function ActivityDetails({selectedActivity: activity, cancelSelectedActivity, op
             </Card.Content>
             <Card.Content extra>
                 <Button.Group widths={2}>
-                    <Button onClick={() => openForm(activity.id)} basic color='blue' content='Edit'/>
-                    <Button onClick={() => cancelSelectedActivity()} basic color='grey' content='Cancel'/>
+                    <Button onClick={() => dispatch(openForm({id: activity.id}))} basic color='blue' content='Edit'/>
+                    <Button onClick={() => dispatch(cancelSelectedActivity())} basic color='grey' content='Cancel'/>
                 </Button.Group>
             </Card.Content>
         </Card>

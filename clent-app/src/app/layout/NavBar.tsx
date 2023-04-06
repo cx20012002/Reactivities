@@ -1,11 +1,12 @@
 import React from 'react';
 import {Button, Container, Menu} from "semantic-ui-react";
+import {useAppDispatch} from "../store/store";
+import {openForm} from "../../features/activities/activitySlice";
 
-interface Props {
-    openForm: () => void;
-}
-
-function NavBar({openForm}: Props) {
+function NavBar() {
+    
+    const dispatch = useAppDispatch();
+    
     return (
         <Menu inverted fixed={"top"}>
             <Container>
@@ -15,7 +16,7 @@ function NavBar({openForm}: Props) {
                 </Menu.Item>
                 <Menu.Item name="Activities"/>
                 <Menu.Item>
-                    <Button onClick={()=>openForm()} positive content="Create Activity"/>
+                    <Button onClick={()=>dispatch(openForm({}))} positive content="Create Activity"/>
                 </Menu.Item>
             </Container>
         </Menu>
