@@ -1,28 +1,23 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import NavBar from "./NavBar";
 import 'semantic-ui-css/semantic.min.css'
-import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import {Container} from "semantic-ui-react";
-import LoadingComponent from "./LoadingComponent";
-import {useAppDispatch, useAppSelector} from "../store/store";
-import {fetchActivitiesAsync} from "../../features/activities/activitySlice";
+import {Outlet, useLocation} from "react-router-dom";
+import HomePage from "../../features/home/HomePage";
 
 function App() {
-    const dispatch = useAppDispatch();
-    const {initialLoad} = useAppSelector(state => state.activities);
-
-    useEffect(() => {
-        dispatch(fetchActivitiesAsync());
-    }, [dispatch])
-
-    if (initialLoad) return <LoadingComponent content='Loading Activities...'/>
+    const location = useLocation();
 
     return (
         <>
-            <NavBar/>
-            <Container style={{marginTop: '7em'}}>
-                <ActivityDashboard />
-            </Container>
+            {location.pathname === '/' ? <HomePage/> : (
+                <>
+                    <NavBar/>
+                    <Container style={{marginTop: '7em'}}>
+                        <Outlet/>
+                    </Container>
+                </>
+            )}
         </>
     );
 }

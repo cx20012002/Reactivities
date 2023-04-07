@@ -1,17 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import 'react-calendar/dist/Calendar.css';
 import './app/layout/styles.css';
-import App from './app/layout/App';
 import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
 import store from "./app/store/store";
+import {RouterProvider} from "react-router-dom";
+import {router} from "./app/router/Routes";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
     <Provider store={store}>
-        <App/>
+        <RouterProvider router={router}/>
     </Provider>
 );
 
