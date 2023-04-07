@@ -1,5 +1,7 @@
 import axios, {AxiosResponse} from "axios";
 import {Activity} from "../models/activity";
+import {toast} from "react-toastify";
+import {router} from "../router/Routes";
 
 // add 2000 ms delay to all requests
 axios.defaults.baseURL = "http://localhost:5148/api";
@@ -12,14 +14,42 @@ const sleep = (delay: number) => {
 }
 
 axios.interceptors.response.use(async response => {
-    try {
-        await sleep(1000)
-        return response;
-    } catch (error) {
-        console.log(error);
-        return await Promise.reject(error);
+    await sleep(1000)
+    return response;
+
+}, error => {
+    const {data, status, config} = error.response;
+    switch (status) {
+        case 400:
+            if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
+                router.navigate('/notfound');
+            }
+            if (data.errors) {
+                const modalStateErrors = [];
+                for (const key in data.errors) {
+                    if (data.errors[key]) {
+                        modalStateErrors.push(data.errors[key])
+                    }
+                }
+                throw modalStateErrors.flat();
+            } else {
+                toast.error('Bad Request');
+            }
+            break;
+        case 401:
+            toast.error('forbidden');
+            break;
+        case 404:
+            router.navigate('/notfound');
+            break;
+        case 500:
+            router.navigate('/server-error', {state: {error: data}});
+            break;
+        default:
+            break;
     }
-});
+    return Promise.reject(error);
+})
 
 // axios response body
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;

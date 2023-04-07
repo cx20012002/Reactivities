@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'react-calendar/dist/Calendar.css';
+import 'react-toastify/dist/ReactToastify.css';
 import './app/layout/styles.css';
 import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
