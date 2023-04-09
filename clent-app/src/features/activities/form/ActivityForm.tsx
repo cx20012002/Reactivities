@@ -1,10 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Button, Form, Segment} from "semantic-ui-react";
 import {useAppDispatch, useAppSelector} from "../../../app/store/store";
 import {createActivityAsync, fetchActivityAsync, updateActivityAsync} from "../activitySlice";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {Activity} from "../../../app/models/activity";
 import {v4 as uuid} from 'uuid';
+import {FieldValues, useForm} from "react-hook-form";
+import * as Yup from 'yup';
+import {yupResolver} from "@hookform/resolvers/yup";
+import AppTextInput from "../../../app/components/AppTextInput";
+import AppTextArea from "../../../app/components/AppTextArea";
+import MySelectInput from "../../../app/components/MySelectInput";
+import {categoryOptions} from "../../../app/components/options/categoryOptions";
+import MyDateInput from "../../../app/components/MyDateInput";
 
 
 function ActivityForm() {
@@ -12,54 +20,56 @@ function ActivityForm() {
     const dispatch = useAppDispatch();
     const {id} = useParams<{ id: string }>();
     const navigate = useNavigate();
-    
-    
-    const [activity, setActivity] = useState({
-        id: '',
-        title: '',
-        category: '',
-        description: '',
-        date: '',
-        city: '',
-        venue: ''
+
+    const validationSchema = Yup.object({
+        title: Yup.string().required('Title is required'),
+        description: Yup.string().required('Description is required'),
+        category: Yup.string().required('Category is required'),
+        date: Yup.string().required('Date is required'),
+        city: Yup.string().required('City is required'),
+        venue: Yup.string().required('Venue is required')
     });
-    
-    useEffect( () => {
-        if (id) dispatch(fetchActivityAsync(id)).then(activity=> setActivity(activity.payload as Activity));
-    }, [dispatch, id]);
-    
+
+    const {handleSubmit, reset, getValues, formState: {isValid}, control} = useForm<FieldValues>({
+        mode: 'all',
+        resolver: yupResolver(validationSchema)
+    });
+
+    useEffect(() => {
+        if (id) dispatch(fetchActivityAsync(id)).then(activity => {
+            reset(activity.payload as Activity);
+            
+        });
+    }, [dispatch, id, reset]);
 
 
-    async function handleSubmit() {
-        if (!activity.id){
+    async function onSubmit() {
+        const activity = getValues() as Activity;
+        if (!activity.id) {
             activity.id = uuid();
             await dispatch(createActivityAsync(activity));
             navigate(`/activities/${activity.id}`)
+
         } else {
             await dispatch(updateActivityAsync(activity));
             navigate(`/activities/${activity.id}`)
         }
+        
+        console.log(activity)
     }
 
-    function handleInputChange(event: any) {
-        const {name, value} = event.target;
-        setActivity({...activity, [name]: value})
-    }
-   
     return (
         <Segment clearing>
-            <Form onSubmit={handleSubmit} autoComplete={'off'}>
-                <Form.Input placeholder='Title' onChange={handleInputChange} value={activity.title} name={'title'}/>
-                <Form.TextArea rows={2} onChange={handleInputChange} value={activity.description} name={'description'}
-                               placeholder='Description'/>
-                <Form.Input onChange={handleInputChange} value={activity.category} name={'category'}
-                            placeholder='Category'/>
-                <Form.Input onChange={handleInputChange} value={activity.date} type={'date'} name={'date'}
-                            placeholder='Date'/>
-                <Form.Input onChange={handleInputChange} value={activity.city} name={'city'} placeholder='City'/>
-                <Form.Input onChange={handleInputChange} value={activity.venue} name={'venue'} placeholder='Venue'/>
-                <Button loading={loading} floated='right' positive type='submit' content='Submit'/>
-                <Button as={Link} to={`/activities/${activity.id}`} floated='right' type='button' content='Cancel'/>
+            <Form onSubmit={handleSubmit(onSubmit)} autoComplete={'off'}>
+                <AppTextInput type={'text'} name={'title'} control={control} placeholder={'Title'}/>
+                <AppTextArea rows={3} name={'description'} control={control} placeholder={'Description'}/>
+                <MySelectInput options={categoryOptions} name={'category'} control={control} placeholder={'Category'}/>
+                <MyDateInput name={'date'} control={control} placeholderText={'Date'} showTimeSelect timeCaption={'time'} dateFormat={'MMMM d, yyyy h:mm aa'}/>
+                <AppTextInput type={'text'} name={'city'} control={control} placeholder={'City'}/>
+                <AppTextInput type={'text'} name={'venue'} control={control} placeholder={'Venue'}/>
+
+                <Button loading={loading} floated={'right'} positive type="submit" content={'Submit'} disabled={!isValid}/>
+                <Button onClick={() => navigate('/activities')} floated={'right'} type="button" content={'Cancel'}/>
             </Form>
         </Segment>
     )

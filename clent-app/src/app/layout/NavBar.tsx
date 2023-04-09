@@ -1,12 +1,8 @@
 import React from 'react';
 import {Button, Container, Menu} from "semantic-ui-react";
-import {useAppDispatch} from "../store/store";
-import {openForm} from "../../features/activities/activitySlice";
 import {NavLink} from "react-router-dom";
 
 function NavBar() {
-    
-    const dispatch = useAppDispatch();
     
     return (
         <Menu inverted fixed={"top"}>

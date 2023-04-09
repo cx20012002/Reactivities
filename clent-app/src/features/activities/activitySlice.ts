@@ -2,8 +2,11 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Activity} from "../../app/models/activity";
 import agent from "../../app/api/agent";
 import {RootState} from "../../app/store/store";
+import {format} from "date-fns";
 
 const activityRegistry = new Map<string, Activity>();
+
+
 
 // fetch activities async thunk
 export const fetchActivitiesAsync = createAsyncThunk<Activity[]>('activities/fetchActivitiesAsync', async (_, thunkAPI) => {
@@ -14,6 +17,7 @@ export const fetchActivitiesAsync = createAsyncThunk<Activity[]>('activities/fet
         return thunkAPI.rejectWithValue({error: error.data})
     }
 })
+
 
 // fetch single activity async thunk
 export const fetchActivityAsync = createAsyncThunk<Activity | undefined, string, { state: RootState }>('activities/fetchActivityAsync', async (id, thunkAPI) => {
@@ -55,6 +59,7 @@ export const deleteActivityAsync = createAsyncThunk<string, string>('activities/
     }
 })
 
+
 interface ActivityState {
     activities: Activity[];
     selectedActivity: Activity | undefined;
@@ -75,14 +80,14 @@ const initialState: ActivityState = {
 
 // sort activities by date
 const activityByDate = (activities: Activity[]) => {
-    return Array.from(activities.values()).sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+    return Array.from(activities.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
 // sort activities by group sorted by date
 export const activityByGroup = (activities: Activity[]) => {
     const sortedActivities = activityByDate(activities);
     return Object.entries(sortedActivities.reduce((activities, activity) => {
-        const date = activity.date;
+        const date = format(activity.date, 'dd, MMM yyyy').split('T')[0];
         activities[date] = activities[date] ? [...activities[date], activity] : [activity];
         return activities;
     }, {} as { [key: string]: Activity[] }));
@@ -122,8 +127,7 @@ export const activitySlice = createSlice({
                     state.activities = Array.from(activityRegistry.values());
                 } else {
                     action.payload.forEach(activity => {
-                        activity.date = activity.date.split('T')[0];
-                        activityRegistry.set(activity.id, activity);
+                        activityRegistry.set(activity.id, {...activity, date: new Date(activity.date)});
                     })
                     state.activities = Array.from(activityRegistry.values());
                 }
@@ -142,13 +146,14 @@ export const activitySlice = createSlice({
             })
             .addCase(fetchActivityAsync.fulfilled, (state, action) => {
                 state.status = 'fulfilled';
-                if (action.payload) {
-                    if (activityRegistry.has(action.payload.id)) {
-                        state.selectedActivity = activityRegistry.get(action.payload.id);
+                const activity = action.payload;
+                if (activity) {
+                    if (activityRegistry.has(activity.id)) {
+                        state.selectedActivity = activityRegistry.get(activity.id);
                     } else {
-                        action.payload.date = action.payload.date.split('T')[0];
-                        activityRegistry.set(action.payload.id, action.payload!);
-                        state.selectedActivity = action.payload;
+                        activity.date = new Date(activity.date);
+                        activityRegistry.set(activity.id, activity!);
+                        state.selectedActivity = activity;
                     }
                 }
                 state.initialLoad = false;
